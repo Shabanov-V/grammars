@@ -2,9 +2,9 @@ import os
 import re
 
 
-if __name__ == "__main__":
-    graph_file = open('data/travel.dot', 'r')
-    grammar_file = open('data/grammar1CNF', 'r')
+def solver(graph_file_path, grammar_file_path):
+    graph_file = open(graph_file_path, 'r')
+    grammar_file = open(grammar_file_path, 'r')
     graph = graph_file.read()
     grammar = grammar_file.read()
     N = max(list(map(int, re.findall('\d+', graph)))) + 1
@@ -35,4 +35,6 @@ if __name__ == "__main__":
         for j in range(N):
            if ('S' in arr[i][j]):
                ans += 1
-    print (ans)
+    grammar_file.close()
+    graph_file.close()
+    return ans
