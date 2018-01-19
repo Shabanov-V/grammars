@@ -1,6 +1,6 @@
 import os
 import re
-
+import subprocess
 
 def solver(graph_file_path, grammar_file_path):
     graph_file = open(graph_file_path, 'r')
@@ -28,11 +28,11 @@ def solver(graph_file_path, grammar_file_path):
                                     f = True
                                     arr[i][j] += ''.join(fnd)
                                     #print(fnd, arr[i][j])
-    ans = 0
+    ans = []
     for i in range(N):
         for j in range(N):
-           if ('S' in arr[i][j]):
-               ans += 1
+            if ('S' in arr[i][j]):
+                ans.append(arr[i][j])
     grammar_file.close()
     graph_file.close()
     return ans
@@ -79,14 +79,118 @@ def algo2(graph_file_path, grammar_file_path):
      # dfs(24, 24, -1, '')
 
 
-    ans = 0
+    ans = []
     for i in range(N):
         for j in range(N):
             if ('S' in arr[i][j]):
-                ans += 1
+                ans.append(arr[i][j])
     grammar_file.close()
     graph_file.close()
     return ans
 
+
+def graph_to_array(graph_file_path):
+    graph_file = open(graph_file_path, 'r')
+    graph = graph_file.read()
+    N = max(list(map(int, re.findall('\d+', graph)))) + 1
+    arr = [[''] * N for i in range(N)]
+    paths = re.findall('(\d+) -> (\d+)\[label=\"(.+)\"\]', graph)
+    for i in paths:
+        (a, b, c) = i
+        arr[int(a)][int(b)] = c
+    return arr
+
+
+def grammar_to_graph(grammar_file_path):
+    grammar_file = open(grammar_file_path, 'r')
+    grammar = grammar_file.read()
+    grammar_rules = list(zip(*(re.findall(r"(.+) -> (.+)", grammar))))
+    M = len(grammar_rules[1])
+    unique = list(set(grammar_rules[0]))
+    order = []
+    net = 0
+    D = 100 * M
+    arr = [[''] * (D + 1) for i in range(D + 1)]
+    #print(M)
+    starts = []
+    ends = []
+    max_cur = 0
+    for i in unique:
+        order += [(i, net)]
+        cur_grammars = list(filter(lambda x: x[0] == i, list(zip(*grammar_rules))))
+        counter = 1
+        #print("cur_grammars = " + str(cur_grammars))
+        rls = [s.split(' ') for s in list(zip(*cur_grammars))[1]]
+        #print ("rls = " + str(rls))
+        D = sum(list(map(len, rls))) - len(rls) + 2
+        #print("D = " + str(D))
+        starts += [str(net)]
+        for j in cur_grammars:
+            t, rules = j # rules = 'F F'
+            prev = net
+            cur = net + counter
+            #print("rules = " + rules)
+            for k in range(len(rules)): # k = 'F'
+                if (k == len(rules) - 1):
+                    cur = net + D - 1
+                    ends += [str(cur)]
+                    counter -= 1
+                if rules[k] == ' ':
+                    continue
+                #print(prev, cur, rules[k])
+                arr[prev][cur] = rules[k]
+                max_cur = max(max_cur, cur)
+                prev = cur
+                counter += 1
+                cur = net + counter
+        net += D
+    ends = list(set(ends))
+    #print("order = " + str(order))
+    #print("starts = " + str(starts))
+    #print("ends = " + str(ends))
+    ans = [[''] * (max_cur + 1) for i in range(max_cur + 1)]
+    for i in range(max_cur + 1):
+        for j in range(max_cur + 1):
+            ans[i][j] = arr[i][j]
+    return arr, starts, ends, order
+
+
+def out_graph(arr, starts = [], ends = [], comments=''):
+    ans = '''
+digraph AST {
+rankdir=LR
+'''
+    t = ''
+    tmp = []
+    for i in range(len(arr)):
+        for j in range(len(arr[i])):
+            if (arr[i][j] == ''):
+                continue
+            tmp += [str(i)]
+            tmp += [str(j)]
+            t += str(i) + ' -> ' + str(j) + '[label="' + str(arr[i][j]) + '"]\n'
+    for i in starts:
+        ans += i + '[label="' + i + '", color="green"]\n'
+    for i in ends:
+        ans += i + '[label="' + i + '", shape="doublecircle"]\n'
+    tmp = list(filter(lambda x: not x in starts and not x in ends, list(set(tmp))))
+    ans += '; '.join(tmp) + '\n'
+    ans += t
+    ans += 'label="' + comments + '";\n'
+    ans += '}'
+    return ans
+
+def algo3(graph_file_path, grammar_file_path):
+    arr = graph_to_array(graph_file_path)
+    grammars, starts, ends, order = grammar_to_graph(grammar_file_path)
+    f = open('graph.dot', 'w')
+    for i in out_graph(grammars, starts, ends, str(order)):
+        f.write(i)
+    f.close()
+    os.system('dot -Tpdf graph.dot -o testGraph.pdf')
+    #print(out_graph(grammars))
+    ans = []
+    return ans
+
 if __name__ == '__main__':
-    print (algo2('data/skos.dot', 'data/grammar1'))
+    algo3('data/testGraph.dot', 'data/testGrammar')
