@@ -1,8 +1,7 @@
 import os
 import re
-import subprocess
 
-def solver(graph_file_path, grammar_file_path):
+def algo1(graph_file_path, grammar_file_path):
     graph_file = open(graph_file_path, 'r')
     grammar_file = open(grammar_file_path, 'r')
     graph = graph_file.read()
@@ -122,7 +121,7 @@ def grammar_to_graph(grammar_file_path):
         #print("cur_grammars = " + str(cur_grammars))
         rls = [s.split(' ') for s in list(zip(*cur_grammars))[1]]
         #print ("rls = " + str(rls))
-        D = sum(list(map(len, rls))) - len(rls) + 2
+        D = sum(list(map(len, rls))) - len(rls) + 3
         #print("D = " + str(D))
         starts += [str(net)]
         for j in cur_grammars:
@@ -152,7 +151,7 @@ def grammar_to_graph(grammar_file_path):
     for i in range(max_cur + 1):
         for j in range(max_cur + 1):
             ans[i][j] = arr[i][j]
-    return arr, starts, ends, order
+    return ans, starts, ends, order
 
 
 def out_graph(arr, starts = [], ends = [], comments=''):
@@ -180,17 +179,73 @@ rankdir=LR
     ans += '}'
     return ans
 
-def algo3(graph_file_path, grammar_file_path):
-    arr = graph_to_array(graph_file_path)
-    grammars, starts, ends, order = grammar_to_graph(grammar_file_path)
-    f = open('graph.dot', 'w')
-    for i in out_graph(grammars, starts, ends, str(order)):
-        f.write(i)
-    f.close()
-    os.system('dot -Tpdf graph.dot -o testGraph.pdf')
-    #print(out_graph(grammars))
-    ans = []
+def out_graph_list(arr):
+    ans = '''digraph AST {
+rankdir=LR
+'''
+    t = ''
+    tmp = []
+    for i in arr:
+        a, b, c = i
+        t += '"' + ','.join(str(x) for x in a) +  '" -> "' + ','.join(str(x) for x in c) + '"' + '[label="' + str(b) + '"]\n'
+    ans += t
+    ans += '}'
     return ans
 
+
+def algo3(graph_file_path, grammar_file_path):
+    arr = graph_to_array(graph_file_path)
+    grammar, starts, ends, order = grammar_to_graph(grammar_file_path)
+    ans = []
+    starts_dic = dict(order)
+    conf_set = set()
+    gss = []
+    for z in range(len(arr)):
+        conf = [(z, starts_dic['S'], (z, 'S'))]
+        conf_set = set()
+        colored = set()
+        while conf:
+            if (conf[0] in conf_set):
+                enter_pos, gramm_pos, gss_node = conf.pop(0)
+                # print("--cur_node = ", end='')
+                # print(enter_pos, gramm_pos, gss_node)
+                continue
+            conf_set.add(conf[0])
+            enter_pos, gramm_pos, gss_node = conf.pop(0)
+            if str(gramm_pos) in ends:
+                ans += [str(gss_node[0]) + str(gss_node[1]) + str(enter_pos)]
+                for i in gss:
+                    fr, ed, to = i
+                    if fr == gss_node:
+                        conf += [(enter_pos, ed, to)]
+            # print("cur_node = ", end='')
+            # print(enter_pos, gramm_pos, gss_node)
+            for j in range(len(arr[enter_pos])):
+                if arr[enter_pos][j] != '':
+                    # print(arr[enter_pos][j])
+                    next_symb = arr[enter_pos][j]
+                    for i in range(len(grammar[gramm_pos])):
+                        grammar_symb = grammar[gramm_pos][i]
+                        if grammar_symb == next_symb:
+                            conf += [(j, i, gss_node)]
+                        if re.match(r'[A-Z]+\d*', grammar_symb):
+                            conf += [(enter_pos, starts_dic[grammar_symb], (enter_pos, grammar_symb))]
+                            # print("GSS: ", end='')
+                            # print(((enter_pos, grammar_symb), i, gss_node))
+                            gss.append(((enter_pos, grammar_symb), i, gss_node))
+
+    # f = open('graph.dot', 'w')
+    # for i in out_graph(grammar, starts, ends, str(order)):
+    #     f.write(i)
+    # f.close()
+    # os.system('dot -Tpdf graph.dot -o testGraph.pdf')
+
+    res = []
+    for i in ans:
+        if ('S' in i):
+            res.append(i)
+
+    res = set(res)
+    return res
 if __name__ == '__main__':
-    algo3('data/testGraph.dot', 'data/testGrammar')
+    print(len(algo3('data/wine.dot', 'data/grammar2')))
