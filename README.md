@@ -26,6 +26,6 @@ python -c "import main; print (main.algo2('data/simple2.dot', 'data/simple2'))" 
 
 python -c "import main; print (main.algo3('PATH_TO_YOUR_GRAPH', 'PATH_TO_YOUR_GRAMMAR'))" > PATH_TO_YOUR_OUTPUT
 
-Например, для выполнения четвертого простого теста
+Например, для выполнения третьего простого теста
 
 python -c "import main; print (main.algo3('data/simple4.dot', 'data/simple4'))" > t.txt
