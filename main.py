@@ -75,14 +75,11 @@ def algo2(graph_file_path, grammar_file_path):
         for i in range(N):
             dfs(i, i, 0, '')
 
-     # dfs(24, 24, -1, '')
-
-
     ans = []
     for i in range(N):
         for j in range(N):
             if ('S' in arr[i][j]):
-                ans.append(arr[i][j])
+                ans.append(str(i) + 'S' + str(j))
     grammar_file.close()
     graph_file.close()
     return ans
@@ -248,4 +245,4 @@ def algo3(graph_file_path, grammar_file_path):
     res = set(res)
     return res
 if __name__ == '__main__':
-    print(len(algo3('data/wine.dot', 'data/grammar2')))
+    print ((algo2('data/simple1.dot', 'data/simple1')))
