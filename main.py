@@ -244,5 +244,3 @@ def algo3(graph_file_path, grammar_file_path):
 
     res = set(res)
     return res
-if __name__ == '__main__':
-    print ((algo2('data/simple1.dot', 'data/simple1')))
