@@ -6,6 +6,10 @@
 
 2) cd grammars/
 
+# Запуск всех тестов
+
+python -m unittest -v tests.py
+
 # Для ввода своих файлов в матричный алгоритм выполнить: 
 
 python -c "import main; print (main.algo1('PATH_TO_YOUR_GRAPH', 'PATH_TO_YOUR_GRAMMAR'))" > PATH_TO_YOUR_OUTPUT
