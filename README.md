@@ -2,20 +2,34 @@
 
 Используется python3
 
-Для запуска тестов выполнить python tests.py. Примерное время выполнения 2 часа. 1:40 на первый алгоритм, 0:20 на второй
+1) git clone git@github.com:Shabanov-V/grammars
 
-Для ввода своих файлов в первый алгоритм выполнить: 
+2) cd grammars/
 
-python -c "import main; print (main.solver('path/graph.dot', 'path/grammar'))" > output.txt
+# Запуск всех тестов
 
-Например, для выполнения первого теста
+python -m unittest -v tests.py
 
-python -c "import main; print (main.solver('data/skos.dot', 'data/grammar1CNF'))" > t.txt
+# Для ввода своих файлов в матричный алгоритм выполнить: 
 
-Для ввода своих файлов во второй алгоритм выполнить: 
-
-python -c "import main; print (main.algo2('path/graph.dot', 'path/grammar'))" > output.txt
+python -c "import main; print (main.algo1('PATH_TO_YOUR_GRAPH', 'PATH_TO_YOUR_GRAMMAR'))" > PATH_TO_YOUR_OUTPUT
 
 Например, для выполнения первого теста
 
-python -c "import main; print (main.algo2('data/skos.dot', 'data/grammar1CNF'))" > t.txt
+python -c "import main; print (main.algo1('data/skos.dot', 'data/grammar1CNF'))" > t.txt
+
+# Для ввода своих файлов в bottom up выполнить: 
+
+python -c "import main; print (main.algo2('PATH_TO_YOUR_GRAPH', 'PATH_TO_YOUR_GRAMMAR'))" > PATH_TO_YOUR_OUTPUT
+
+Например, для выполнения второго простого теста
+
+python -c "import main; print (main.algo2('data/simple2.dot', 'data/simple2'))" > t.txt
+
+# Для ввода своих файлов в top down выполнить: 
+
+python -c "import main; print (main.algo3('PATH_TO_YOUR_GRAPH', 'PATH_TO_YOUR_GRAMMAR'))" > PATH_TO_YOUR_OUTPUT
+
+Например, для выполнения третьего простого теста
+
+python -c "import main; print (main.algo3('data/simple4.dot', 'data/simple4'))" > t.txt
