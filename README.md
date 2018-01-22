@@ -24,7 +24,7 @@ python -c "import main; print (main.algo2('PATH_TO_YOUR_GRAPH', 'PATH_TO_YOUR_GR
 
 Например, для выполнения второго простого теста
 
-python -c "import main; print (main.algo2('data/simple2.dot', 'data/simple2'))" > t.txt
+python -c "import main; print (main.algo2('data/simple4.dot', 'data/simple4'))" > t.txt
 
 # Для ввода своих файлов в top down выполнить: 
 
