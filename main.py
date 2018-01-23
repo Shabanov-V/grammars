@@ -333,5 +333,5 @@ def algo3(graph_file_path, grammar_file_path, is_test=False):
     if (is_test):
         return res
     else:
-        return (res)
+        return '\n'.join(res)
 
